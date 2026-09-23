@@ -1,4 +1,4 @@
-// Location: app/not-found.tsx
+
 import Link from "next/link";
 import { Dumbbell } from "lucide-react";
 
