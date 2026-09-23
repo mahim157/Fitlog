@@ -1,69 +1,97 @@
-import Image from "next/image";
+// Location: app/page.tsx
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
+import Hero from "@/components/Hero";
+import WorkoutCard from "@/components/WorkoutCard";
+import { Workout } from "@/types/workout";
+import { ChevronDown, Search, Loader2 } from "lucide-react";
 
 export default function Home() {
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<"duration" | "calories" | "rating">("duration");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    async function fetchWorkouts() {
+      try {
+        const res = await fetch("https://api.abcz.workers.dev/api/fitlog");
+        const data = await res.json();
+        setWorkouts(data);
+      } catch (error) {
+        console.error("Failed to fetch workouts:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchWorkouts();
+  }, []);
+
+  const filteredAndSortedWorkouts = useMemo(() => {
+    return [...workouts]
+      .filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.some((cat) => cat.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+      .sort((a, b) => {
+        if (sortBy === "rating") return b.rating - a.rating;
+        return a[sortBy] - b[sortBy];
+      });
+  }, [workouts, sortBy, searchQuery]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-[#090a0c] text-white pb-20">
+      <Hero />
+
+      <section id="library" className="max-w-7xl mx-auto px-4 md:px-8 pt-16">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+          <div>
+            <h2 className="text-3xl font-extrabold tracking-tight uppercase">THE LIBRARY</h2>
+            <p className="text-zinc-400 text-xs mt-1">Twelve lifts covering every major muscle group.</p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+              <input
+                type="text"
+                placeholder="Search workout or muscle..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-zinc-900/90 border border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[#ccff00]"
+              />
+            </div>
+
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as "duration" | "calories" | "rating")}
+                className="bg-zinc-900/90 border border-zinc-800 rounded-lg pl-3 pr-8 py-2 text-xs font-bold text-zinc-300 appearance-none cursor-pointer focus:outline-none focus:border-[#ccff00]"
+              >
+                <option value="duration">Sort by Duration</option>
+                <option value="calories">Sort by Calories</option>
+                <option value="rating">Sort by Rating</option>
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <Loader2 className="w-8 h-8 text-[#ccff00] animate-spin" />
+            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Loading Workouts...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredAndSortedWorkouts.map((workout) => (
+              <WorkoutCard key={workout.id} workout={workout} />
+            ))}
+          </div>
+        )}
+      </section>
+    </main>
   );
 }
