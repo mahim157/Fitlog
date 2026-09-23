@@ -1,4 +1,5 @@
 
+
 import Link from "next/link";
 import { Dumbbell } from "lucide-react";
 
@@ -9,7 +10,7 @@ export default function NotFound() {
       <h1 className="text-6xl font-black text-white uppercase tracking-wider">404</h1>
       <h2 className="text-xl font-bold text-zinc-400 mt-2 uppercase">LIFT NOT FOUND</h2>
       <p className="text-zinc-500 max-w-md mt-2 mb-8 text-xs">
-        You wandered off the weight room floor. The routine you're looking for doesn't exist or was re-racked elsewhere.
+        You wandered off the weight room floor. The routine you&apos;re looking for doesn&apos;t exist or was re-racked elsewhere.
       </p>
       <Link
         href="/"
