@@ -1,16 +1,39 @@
-// Location: components/Footer.tsx
-import { Dumbbell } from "lucide-react";
+
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-zinc-800/60 bg-[#0d0f12] py-6 px-6 mt-20">
-      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-white font-black">
-          <Dumbbell className="w-5 h-5 text-[#ccff00] -rotate-45" />
-          <span className="text-sm uppercase tracking-wider">FITLOG</span>
+    <footer className="bg-[#0d0f12] border-t border-zinc-800/60 py-10 px-6 mt-20">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        
+        {/* Logo & Brand Info */}
+        <div className="flex items-center gap-3">
+          <Image
+            src="/logo.png" // public ফোল্ডারে রাখা আপনার ইমেজের নাম
+            alt="Fitlog Logo"
+            width={36}
+            height={36}
+            className="object-contain"
+          />
+          <span className="font-extrabold text-lg tracking-wider text-white uppercase">
+            FITLOG
+          </span>
         </div>
+
+        {/* Footer Navigation Links */}
+        <div className="flex items-center gap-6 text-xs font-semibold text-zinc-400">
+          <Link href="/" className="hover:text-white transition-colors">
+            Workouts
+          </Link>
+          <Link href="/my-plan" className="hover:text-white transition-colors">
+            My Plan
+          </Link>
+        </div>
+
+        {/* Copyright */}
         <p className="text-xs text-zinc-500">
-          © 2026 FitLog — Workout Library. Train hard, log honest.
+          © {new Date().getFullYear()} Fitlog. All rights reserved.
         </p>
       </div>
     </footer>
