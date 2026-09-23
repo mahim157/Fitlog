@@ -1,4 +1,4 @@
-
+// Location: app/my-plan/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -33,9 +33,11 @@ export default function MyPlanPage() {
   const totalCalories = planList.reduce((acc, item) => acc + (Number(item.caloriesBurned) || 0), 0);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+      
+      {/* Header Section */}
       <div>
-        <h1 className="text-3xl font-black uppercase text-white tracking-wider">
+        <h1 className="text-2xl sm:text-3xl font-black uppercase text-white tracking-wider">
           MY PLAN
         </h1>
         <p className="text-zinc-500 text-xs sm:text-sm mt-1">
@@ -43,26 +45,28 @@ export default function MyPlanPage() {
         </p>
       </div>
 
-      <div className="bg-[#111318] border border-zinc-800/80 rounded-2xl p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+      {/* Overview Stats Cards - Mobile Flex/Grid Responsive */}
+      <div className="bg-[#111318] border border-zinc-800/80 rounded-2xl p-4 sm:p-6 grid grid-cols-3 gap-3 sm:gap-6 text-center sm:text-left">
         <div>
-          <p className="text-zinc-500 text-xs font-semibold">Exercises</p>
-          <p className="text-4xl font-black text-[#CCFF00] mt-2">{totalExercises}</p>
+          <p className="text-zinc-500 text-[10px] sm:text-xs font-semibold uppercase">Exercises</p>
+          <p className="text-2xl sm:text-4xl font-black text-[#CCFF00] mt-1 sm:mt-2">{totalExercises}</p>
         </div>
         <div>
-          <p className="text-zinc-500 text-xs font-semibold">Minutes</p>
-          <p className="text-4xl font-black text-white mt-2">{totalMinutes}</p>
+          <p className="text-zinc-500 text-[10px] sm:text-xs font-semibold uppercase">Minutes</p>
+          <p className="text-2xl sm:text-4xl font-black text-white mt-1 sm:mt-2">{totalMinutes}</p>
         </div>
         <div>
-          <p className="text-zinc-500 text-xs font-semibold">Calories</p>
-          <p className="text-4xl font-black text-white mt-2">{totalCalories}</p>
+          <p className="text-zinc-[#808d9e] text-[#808d9e] text-[10px] sm:text-xs font-semibold uppercase">Calories</p>
+          <p className="text-2xl sm:text-4xl font-black text-white mt-1 sm:mt-2">{totalCalories}</p>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="bg-[#111318] border border-zinc-800/80 p-1 rounded-xl inline-flex gap-1">
+      {/* Filter and Tabs */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="bg-[#111318] border border-zinc-800/80 p-1 rounded-xl flex w-full sm:w-auto">
           <button
             onClick={() => setActiveTab("today")}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+            className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
               activeTab === "today"
                 ? "bg-zinc-800 text-white"
                 : "text-zinc-400 hover:text-white"
@@ -72,7 +76,7 @@ export default function MyPlanPage() {
           </button>
           <button
             onClick={() => setActiveTab("saved")}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+            className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
               activeTab === "saved"
                 ? "bg-zinc-800 text-white"
                 : "text-zinc-400 hover:text-white"
@@ -82,13 +86,13 @@ export default function MyPlanPage() {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 self-end sm:self-auto">
+        <div className="flex items-center justify-end gap-2">
           <span className="text-zinc-500 text-xs font-medium">Sort By</span>
           <div className="relative">
             <select
               value={sortBy}
               onChange={(e: any) => setSortBy(e.target.value)}
-              className="appearance-none bg-[#111318] border border-zinc-800 text-white text-xs font-semibold px-4 py-2 pr-8 rounded-xl focus:outline-none cursor-pointer"
+              className="appearance-none bg-[#111318] border border-zinc-800 text-white text-xs font-semibold px-3 sm:px-4 py-2 pr-8 rounded-xl focus:outline-none cursor-pointer"
             >
               <option value="duration">Duration</option>
               <option value="calories">Calories</option>
@@ -99,10 +103,11 @@ export default function MyPlanPage() {
         </div>
       </div>
 
-      <div className="space-y-4">
+      {/* Workout List */}
+      <div className="space-y-3 sm:space-y-4">
         {sortedList.length === 0 ? (
-          <div className="bg-[#111318] border border-zinc-800/80 rounded-2xl p-12 text-center">
-            <p className="text-zinc-500 text-sm font-medium">
+          <div className="bg-[#111318] border border-zinc-800/80 rounded-2xl p-8 sm:p-12 text-center">
+            <p className="text-zinc-500 text-xs sm:text-sm font-medium">
               {activeTab === "today"
                 ? "No lifts added for today yet."
                 : "No saved workouts for later."}
@@ -115,10 +120,11 @@ export default function MyPlanPage() {
             return (
               <div
                 key={item.id}
-                className="bg-[#111318] border border-zinc-800/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-zinc-700 transition-all"
+                className="bg-[#111318] border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-zinc-700 transition-all"
               >
-                <div className="flex items-center gap-4">
-                  <div className="relative w-28 h-20 rounded-xl overflow-hidden bg-zinc-900 flex-shrink-0">
+                {/* Left Card Info */}
+                <div className="flex items-start sm:items-center gap-3.5 sm:gap-4">
+                  <div className="relative w-20 h-20 sm:w-28 sm:h-20 rounded-xl overflow-hidden bg-zinc-900 flex-shrink-0">
                     <Image
                       src={item.image || "/banner.png"}
                       alt={item.name}
@@ -127,35 +133,36 @@ export default function MyPlanPage() {
                     />
                   </div>
 
-                  <div>
-                    <h3 className="text-white font-black text-sm uppercase tracking-tight">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-white font-black text-xs sm:text-sm uppercase tracking-tight truncate">
                       {item.name}
                     </h3>
-                    <p className="text-zinc-500 text-xs font-medium mt-0.5">
+                    <p className="text-zinc-500 text-[11px] sm:text-xs font-medium mt-0.5 truncate">
                       {item.equipment}
                     </p>
 
-                    <div className="flex items-center gap-4 text-zinc-400 text-xs font-medium mt-2">
+                    <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 text-zinc-400 text-[11px] sm:text-xs font-medium mt-2">
                       <div className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-zinc-500" />
+                        <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-zinc-500" />
                         <span>{item.duration} min</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Flame className="w-3.5 h-3.5 text-[#CCFF00]" />
+                        <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#CCFF00]" />
                         <span>{item.caloriesBurned} kcal</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5 text-zinc-500" />
+                        <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-zinc-500" />
                         <span>{item.rating}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 self-end sm:self-auto">
+                {/* Right Action Buttons */}
+                <div className="flex items-center justify-end gap-2 sm:gap-3 border-t md:border-t-0 border-zinc-800/60 pt-3 md:pt-0">
                   <Link
                     href={`/workout/${item.id}`}
-                    className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-bold text-xs px-4 py-2.5 rounded-full transition-colors"
+                    className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-bold text-[11px] sm:text-xs px-3 sm:px-4 py-2 sm:py-2.5 rounded-full transition-colors text-center"
                   >
                     View Details
                   </Link>
@@ -163,13 +170,13 @@ export default function MyPlanPage() {
                   {activeTab === "today" ? (
                     <button
                       onClick={() => toggleComplete(item.id)}
-                      className={`font-black text-xs px-5 py-2.5 rounded-full flex items-center gap-1.5 transition-all cursor-pointer ${
+                      className={`font-black text-[11px] sm:text-xs px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full flex items-center gap-1.5 transition-all cursor-pointer ${
                         isCompleted
                           ? "bg-zinc-800 text-zinc-400"
                           : "bg-[#CCFF00] hover:bg-[#b8e600] text-black"
                       }`}
                     >
-                      <Check className="w-4 h-4 stroke-[3]" />
+                      <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" />
                       <span>{isCompleted ? "Done" : "Mark as Done"}</span>
                     </button>
                   ) : (
@@ -178,7 +185,7 @@ export default function MyPlanPage() {
                         addToPlan(item);
                         removeFromSaved(item.id);
                       }}
-                      className="bg-[#CCFF00] hover:bg-[#b8e600] text-black font-black text-xs px-5 py-2.5 rounded-full cursor-pointer"
+                      className="bg-[#CCFF00] hover:bg-[#b8e600] text-black font-black text-[11px] sm:text-xs px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full cursor-pointer"
                     >
                       Add to Plan
                     </button>
@@ -190,7 +197,7 @@ export default function MyPlanPage() {
                         ? removeFromPlan(item.id)
                         : removeFromSaved(item.id)
                     }
-                    className="text-zinc-600 hover:text-zinc-300 p-1.5 transition-colors cursor-pointer"
+                    className="text-zinc-600 hover:text-zinc-300 p-1 sm:p-1.5 transition-colors cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>

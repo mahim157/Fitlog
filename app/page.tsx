@@ -1,4 +1,5 @@
 
+
 import Hero from "@/components/Hero";
 import WorkoutCard, { Workout } from "@/components/WorkoutCard";
 
@@ -30,10 +31,10 @@ export default async function HomePage() {
   const workouts = await getWorkouts();
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-12">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12">
       <Hero />
 
-      <section id="library" className="space-y-6">
+      <section id="library" className="space-y-4 sm:space-y-6">
         <div>
           <h2 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
             THE LIBRARY
@@ -44,14 +45,14 @@ export default async function HomePage() {
         </div>
 
         {workouts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {workouts.map((workout) => (
               <WorkoutCard key={workout.id} workout={workout} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 bg-[#111318] rounded-2xl border border-zinc-800">
-            <p className="text-zinc-400 text-sm font-medium">
+          <div className="text-center py-10 sm:py-12 bg-[#111318] rounded-2xl border border-zinc-800 px-4">
+            <p className="text-zinc-400 text-xs sm:text-sm font-medium">
               No workouts found or API endpoint is unavailable.
             </p>
           </div>
