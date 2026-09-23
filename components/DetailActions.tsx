@@ -5,25 +5,19 @@
 import { Calendar, Bookmark } from "lucide-react";
 import { toast } from "sonner";
 import { Workout } from "./WorkoutCard";
-import { usePlan } from "@/context/PlanContext"; 
+import { usePlan } from "@/context/PlanContext";
 
 export default function DetailActions({ workout }: { workout: Workout }) {
   const { addToPlan, saveForLater } = usePlan();
 
   const handleAddToPlan = () => {
-   
     addToPlan(workout);
-
-    toast.success(`${workout.name} added to today's plan!`, {
-      description: `${workout.duration} min • ${workout.caloriesBurned} kcal`,
-    });
+    toast.success("Added to today's plan!");
   };
 
   const handleSaveForLater = () => {
-    
     saveForLater(workout);
-
-    toast.info(`${workout.name} saved for later!`);
+    toast.info("Saved for later!");
   };
 
   return (

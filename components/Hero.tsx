@@ -30,7 +30,7 @@ export default function Hero() {
           </Link>
         </div>
 
-        {/* Right Image Container */}
+        
         <div className="relative w-full lg:w-[480px] h-[300px] sm:h-[380px] flex items-center justify-center">
           <Image
             src="/banner.png"

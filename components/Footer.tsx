@@ -10,7 +10,7 @@ export default function Footer() {
         {/* Logo & Brand Info */}
         <div className="flex items-center gap-3">
           <Image
-            src="/logo.png" // public ফোল্ডারে রাখা আপনার ইমেজের নাম
+            src="/logo.png" 
             alt="Fitlog Logo"
             width={36}
             height={36}
@@ -21,7 +21,7 @@ export default function Footer() {
           </span>
         </div>
 
-        {/* Footer Navigation Links */}
+        
         <div className="flex items-center gap-6 text-xs font-semibold text-zinc-400">
           <Link href="/" className="hover:text-white transition-colors">
             Workouts
@@ -31,7 +31,7 @@ export default function Footer() {
           </Link>
         </div>
 
-        {/* Copyright */}
+        
         <p className="text-xs text-zinc-500">
           © {new Date().getFullYear()} Fitlog. All rights reserved.
         </p>

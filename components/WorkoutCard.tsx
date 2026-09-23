@@ -31,9 +31,9 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
   return (
     <Link
       href={`/workout/${workout.id}`}
+      prefetch={true}
       className="group bg-[#111318] border border-zinc-800/80 hover:border-zinc-700 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40"
     >
-      
       <div className="relative w-full h-48 sm:h-52 bg-zinc-900 overflow-hidden">
         <Image
           src={workout.image || "/banner.png"}
@@ -46,7 +46,6 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 
       <div className="p-5 flex-1 flex flex-col justify-between">
         <div>
-        
           <div className="flex flex-wrap gap-2 mb-3">
             {muscleGroups.map((group, idx) => (
               <span
@@ -58,18 +57,15 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
             ))}
           </div>
 
-          
           <h3 className="text-white font-black text-lg uppercase tracking-tight line-clamp-1 group-hover:text-[#ccff00] transition-colors">
             {workout.name}
           </h3>
 
-          
           <p className="text-zinc-500 text-xs font-medium mt-1 line-clamp-1">
             {workout.equipment}
           </p>
         </div>
 
-        
         <div className="flex items-center gap-4 text-zinc-400 text-xs font-semibold mt-6 pt-4 border-t border-zinc-800/60">
           <div className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-zinc-500" />

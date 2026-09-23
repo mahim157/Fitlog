@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { PlanProvider } from "@/context/PlanContext"; 
+import { PlanProvider } from "@/context/PlanContext";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -28,7 +28,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
           </div>
           <Footer />
-          <Toaster position="bottom-right" theme="dark" richColors />
+          <Toaster position="top-right" theme="dark" richColors />
         </PlanProvider>
       </body>
     </html>
