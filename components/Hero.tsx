@@ -1,46 +1,47 @@
-// Location: components/Hero.tsx
-"use client";
 
-import { ArrowDown } from "lucide-react";
+// Location: components/Hero.tsx
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero() {
-  const scrollToLibrary = () => {
-    const section = document.getElementById("library");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 pt-8">
-      <div className="bg-[#121418] border border-zinc-800/80 rounded-2xl p-8 md:p-12 flex flex-col-reverse lg:flex-row items-center justify-between gap-8 relative overflow-hidden">
-        <div className="flex-1 max-w-2xl">
-          <span className="text-[#ccff00] text-xs font-extrabold tracking-widest uppercase mb-3 block">
+    <section className="bg-[#121418] border border-zinc-800/80 rounded-3xl p-8 md:p-12 my-6 relative overflow-hidden">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+        
+        {/* Left Content */}
+        <div className="flex-1 max-w-xl z-10">
+          <span className="text-[#ccff00] text-xs font-bold tracking-widest uppercase mb-4 block">
             WORKOUT LIBRARY
           </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white uppercase leading-[1.1] mb-4 font-sans">
+
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase text-white tracking-tight leading-[1.05] mb-5">
             TRAIN WITH INTENT. LOG EVERY SET.
           </h1>
-          <p className="text-zinc-400 text-sm md:text-base leading-relaxed mb-8 max-w-lg">
-            FitLog is a dark, no-nonsense gym companion: pick a lift, lock it into today's plan, and watch the week's work add up.
+
+          <p className="text-zinc-400 text-sm md:text-base leading-relaxed mb-8 max-w-md">
+            FitLog is a dark, no-nonsense gym companion: pick a lift, lock it into today&apos;s plan, and watch the week&apos;s work add up.
           </p>
-          <button
-            onClick={scrollToLibrary}
-            className="bg-[#ccff00] hover:bg-[#b8e600] text-black font-black px-6 py-3.5 rounded-lg text-xs uppercase tracking-wider flex items-center gap-2 transition-all transform active:scale-95"
+
+          <Link
+            href="#library"
+            className="inline-block bg-[#ccff00] hover:bg-[#b8e600] text-black font-extrabold px-6 py-3.5 rounded-lg text-xs uppercase tracking-wider transition-all transform active:scale-95 shadow-md shadow-[#ccff00]/10"
           >
-            <span>BROWSE WORKOUTS</span>
-            <ArrowDown className="w-4 h-4 stroke-[3]" />
-          </button>
+            BROWSE WORKOUTS
+          </Link>
         </div>
 
-        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
-          <img
-            src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=800"
-            alt="FitLog Hero Gym Visual"
-            className="w-full max-w-md h-auto object-contain rounded-xl drop-shadow-2xl"
+        {/* Right Image Container */}
+        <div className="relative w-full lg:w-[480px] h-[300px] sm:h-[380px] flex items-center justify-center">
+          <Image
+            src="/banner.png"
+            alt="Workout Gym Machine"
+            fill
+            priority
+            className="object-contain object-right drop-shadow-2xl"
           />
         </div>
+
       </div>
-    </div>
+    </section>
   );
 }
