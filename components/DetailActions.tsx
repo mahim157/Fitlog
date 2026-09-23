@@ -1,41 +1,66 @@
 
-
 "use client";
 
-import { Calendar, Bookmark } from "lucide-react";
-import { toast } from "sonner";
-import { Workout } from "./WorkoutCard";
 import { usePlan } from "@/context/PlanContext";
+import { Workout } from "@/components/WorkoutCard";
+import { toast } from "sonner";
+import { Plus, Bookmark } from "lucide-react";
 
 export default function DetailActions({ workout }: { workout: Workout }) {
-  const { addToPlan, saveForLater } = usePlan();
+  const { planList, savedList, addToPlan, addToSaved, isPlanFull } = usePlan();
+
+  const isPlanned = planList.some((item) => String(item.id) === String(workout.id));
+  const isSaved = savedList.some((item) => String(item.id) === String(workout.id));
 
   const handleAddToPlan = () => {
-    addToPlan(workout);
-    toast.success("Added to today's plan!");
+    if (isPlanned) {
+      toast.info(`"${workout.name}" is already in today's plan.`);
+      return;
+    }
+    const success = addToPlan(workout);
+    if (success) {
+      toast.success(`Added "${workout.name}" to Today's Plan!`);
+    } else {
+      toast.error("Cap reached! You can only add 5 lifts for today.");
+    }
   };
 
   const handleSaveForLater = () => {
-    saveForLater(workout);
-    toast.info("Saved for later!");
+    if (isSaved) {
+      toast.info(`"${workout.name}" is already saved.`);
+      return;
+    }
+    addToSaved(workout);
+    toast.success(`Saved "${workout.name}" for later!`);
   };
 
   return (
-    <div className="flex items-center gap-3 pt-4">
+    <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-zinc-800/80">
       <button
         onClick={handleAddToPlan}
-        className="flex-1 bg-[#CCFF00] hover:bg-[#b8e600] text-black font-extrabold px-5 py-3.5 rounded-xl text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-all transform active:scale-95 shadow-md shadow-[#CCFF00]/10 cursor-pointer"
+        disabled={isPlanFull && !isPlanned}
+        className={`flex-1 font-black text-xs sm:text-sm py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
+          isPlanned
+            ? "bg-zinc-800 text-zinc-400 cursor-not-allowed"
+            : isPlanFull
+            ? "bg-zinc-800 text-zinc-600 border border-zinc-700/50 cursor-not-allowed opacity-60"
+            : "bg-[#CCFF00] hover:bg-[#b8e600] text-black"
+        }`}
       >
-        <Calendar className="w-4 h-4" />
-        <span>Add to today's plan</span>
+        <Plus className="w-4 h-4 stroke-[3]" />
+        <span>{isPlanned ? "In Today's Plan" : isPlanFull ? "Plan Limit Reached (5 Max)" : "Add to Today's Plan"}</span>
       </button>
 
       <button
         onClick={handleSaveForLater}
-        className="bg-[#121418] hover:bg-zinc-800 border border-zinc-800 text-white font-bold px-5 py-3.5 rounded-xl text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer"
+        className={`px-6 py-3 rounded-xl border text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+          isSaved
+            ? "bg-zinc-800 border-zinc-700 text-[#CCFF00]"
+            : "bg-zinc-900 border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800"
+        }`}
       >
-        <Bookmark className="w-4 h-4 text-zinc-400" />
-        <span>Save for later</span>
+        <Bookmark className="w-4 h-4" />
+        <span>{isSaved ? "Saved" : "Save for Later"}</span>
       </button>
     </div>
   );
