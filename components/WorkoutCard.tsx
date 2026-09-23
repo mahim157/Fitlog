@@ -1,88 +1,133 @@
 
+
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, Flame, Star } from "lucide-react";
+import { Clock, Flame, Star, Plus, Bookmark } from "lucide-react";
+import { usePlan } from "@/context/PlanContext";
+import { toast } from "sonner";
 
 export interface Workout {
-  id: number | string;
+  id: string | number;
   name: string;
-  image: string;
-  muscleGroups: string[];
-  equipment: string;
-  difficulty?: string;
+  description?: string;
+  image?: string;
+  equipment?: string;
+  muscleGroups?: string[];
   duration: number;
   caloriesBurned: number;
+  rating: number;
+  difficulty?: string;
   sets?: number;
   reps?: string;
-  rating: number;
-  description?: string;
   instructions?: string[];
 }
 
-interface WorkoutCardProps {
-  workout: Workout;
-}
+export default function WorkoutCard({ workout }: { workout: Workout }) {
+  const { planList, savedList, addToPlan, addToSaved, isPlanFull } = usePlan();
 
-export default function WorkoutCard({ workout }: WorkoutCardProps) {
-  const muscleGroups = Array.isArray(workout.muscleGroups) ? workout.muscleGroups : [];
+  const isPlanned = planList.some((item) => String(item.id) === String(workout.id));
+  const isSaved = savedList.some((item) => String(item.id) === String(workout.id));
+
+  const handleAddToPlan = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isPlanned) {
+      toast.info(`"${workout.name}" is already in today's plan.`);
+      return;
+    }
+    const success = addToPlan(workout);
+    if (success) {
+      toast.success(`Added "${workout.name}" to Today's Plan!`);
+    } else {
+      toast.error("Cap reached! You can only add 5 lifts for today.");
+    }
+  };
+
+  const handleAddToSaved = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isSaved) {
+      toast.info(`"${workout.name}" is already saved.`);
+      return;
+    }
+    addToSaved(workout);
+    toast.success(`Saved "${workout.name}" for later!`);
+  };
 
   return (
-    <Link
-      href={`/workout/${workout.id}`}
-      prefetch={true}
-      className="group bg-[#111318] border border-zinc-800/80 hover:border-zinc-700 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40"
-    >
-      <div className="relative w-full h-48 sm:h-52 bg-zinc-900 overflow-hidden">
-        <Image
-          src={workout.image || "/banner.png"}
-          alt={workout.name}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-      </div>
-
-      <div className="p-5 flex-1 flex flex-col justify-between">
-        <div>
-          <div className="flex flex-wrap gap-2 mb-3">
-            {muscleGroups.map((group, idx) => (
-              <span
-                key={idx}
-                className="bg-[#ccff00] text-black text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider"
-              >
-                {group}
-              </span>
-            ))}
-          </div>
-
-          <h3 className="text-white font-black text-lg uppercase tracking-tight line-clamp-1 group-hover:text-[#ccff00] transition-colors">
-            {workout.name}
-          </h3>
-
-          <p className="text-zinc-500 text-xs font-medium mt-1 line-clamp-1">
-            {workout.equipment}
-          </p>
+    <div className="bg-[#111318] border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-zinc-700 transition-all group">
+      <div>
+        <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-zinc-900 mb-4">
+          <Image
+            src={workout.image || "/banner.png"}
+            alt={workout.name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
         </div>
 
-        <div className="flex items-center gap-4 text-zinc-400 text-xs font-semibold mt-6 pt-4 border-t border-zinc-800/60">
-          <div className="flex items-center gap-1.5">
+        <h3 className="text-white font-black text-sm uppercase tracking-tight truncate">
+          {workout.name}
+        </h3>
+        <p className="text-zinc-500 text-xs font-medium mt-0.5 truncate">
+          {workout.equipment || "Standard Equipment"}
+        </p>
+
+        <div className="flex items-center gap-3 text-zinc-400 text-xs font-medium mt-3">
+          <div className="flex items-center gap-1">
             <Clock className="w-3.5 h-3.5 text-zinc-500" />
             <span>{workout.duration} min</span>
           </div>
-
-          <div className="flex items-center gap-1.5">
-            <Flame className="w-3.5 h-3.5 text-zinc-500" />
+          <div className="flex items-center gap-1">
+            <Flame className="w-3.5 h-3.5 text-[#CCFF00]" />
             <span>{workout.caloriesBurned} kcal</span>
           </div>
-
-          <div className="flex items-center gap-1.5 ml-auto">
-            <Star className="w-3.5 h-3.5 text-zinc-500 fill-zinc-500" />
+          <div className="flex items-center gap-1">
+            <Star className="w-3.5 h-3.5 text-zinc-500" />
             <span>{workout.rating}</span>
           </div>
         </div>
       </div>
-    </Link>
+
+      <div className="flex items-center justify-between gap-2 mt-5 pt-3 border-t border-zinc-800/60">
+        <Link
+          href={`/workout/${workout.id}`}
+          className="text-zinc-400 hover:text-white text-xs font-bold transition-colors"
+        >
+          Details
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleAddToSaved}
+            className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+              isSaved
+                ? "bg-zinc-800 border-zinc-700 text-[#CCFF00]"
+                : "bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:text-white"
+            }`}
+            title="Save for later"
+          >
+            <Bookmark className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={handleAddToPlan}
+            disabled={isPlanFull && !isPlanned}
+            className={`font-black text-xs px-3 py-1.5 rounded-xl flex items-center gap-1 transition-all cursor-pointer ${
+              isPlanned
+                ? "bg-zinc-800 text-zinc-400 cursor-not-allowed"
+                : isPlanFull
+                ? "bg-zinc-800 text-zinc-600 border border-zinc-700/50 cursor-not-allowed opacity-60"
+                : "bg-[#CCFF00] hover:bg-[#b8e600] text-black"
+            }`}
+            title={isPlanFull && !isPlanned ? "Plan limit reached (5 lifts max)" : "Add to today's plan"}
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[3]" />
+            <span>{isPlanned ? "In Plan" : isPlanFull ? "Cap Reached" : "Add"}</span>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

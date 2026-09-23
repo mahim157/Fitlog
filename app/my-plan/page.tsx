@@ -1,27 +1,64 @@
-// Location: app/my-plan/page.tsx
+
 "use client";
 
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, Flame, Star, Check, X, ChevronDown } from "lucide-react";
+import { Clock, Flame, Star, Check, X, ChevronDown, Search } from "lucide-react";
 import { usePlan } from "@/context/PlanContext";
+import { toast } from "sonner";
 
 export default function MyPlanPage() {
-  const { planList, savedList, removeFromPlan, removeFromSaved, addToPlan } = usePlan();
+  const { planList, savedList, removeFromPlan, removeFromSaved, addToPlan, isPlanFull } = usePlan();
   const [activeTab, setActiveTab] = useState<"today" | "saved">("today");
   const [sortBy, setSortBy] = useState<"duration" | "calories" | "rating">("duration");
+  const [searchQuery, setSearchQuery] = useState("");
   const [completedIds, setCompletedIds] = useState<Array<number | string>>([]);
 
-  const toggleComplete = (id: number | string) => {
-    setCompletedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+  const toggleComplete = (item: any) => {
+    const isDone = completedIds.includes(item.id);
+    if (isDone) {
+      setCompletedIds((prev) => prev.filter((id) => id !== item.id));
+      toast.info(`Marked "${item.name}" as incomplete.`);
+    } else {
+      setCompletedIds((prev) => [...prev, item.id]);
+      toast.success(`Marked "${item.name}" as completed! 🔥`);
+    }
+  };
+
+  const handleRemove = (item: any) => {
+    if (activeTab === "today") {
+      removeFromPlan(item.id);
+      toast.error(`Removed "${item.name}" from Today's Plan.`);
+    } else {
+      removeFromSaved(item.id);
+      toast.error(`Removed "${item.name}" from Saved workouts.`);
+    }
+  };
+
+  const handleMoveToPlan = (item: any) => {
+    const success = addToPlan(item);
+    if (success) {
+      removeFromSaved(item.id);
+      toast.success(`Moved "${item.name}" to Today's Plan!`);
+    } else {
+      toast.error("Cap reached! You can only add 5 lifts for today.");
+    }
   };
 
   const activeList = activeTab === "today" ? planList : savedList;
 
-  const sortedList = [...activeList].sort((a, b) => {
+  const filteredList = activeList.filter((item) => {
+    const query = searchQuery.toLowerCase();
+    const matchesName = item.name.toLowerCase().includes(query);
+    const matchesEquipment = item.equipment?.toLowerCase().includes(query);
+    const matchesMuscle = item.muscleGroups?.some((group) =>
+      group.toLowerCase().includes(query)
+    );
+    return matchesName || matchesEquipment || matchesMuscle;
+  });
+
+  const sortedList = [...filteredList].sort((a, b) => {
     if (sortBy === "duration") return a.duration - b.duration;
     if (sortBy === "calories") return a.caloriesBurned - b.caloriesBurned;
     if (sortBy === "rating") return b.rating - a.rating;
@@ -34,18 +71,15 @@ export default function MyPlanPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
-      
-      {/* Header Section */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-black uppercase text-white tracking-wider">
           MY PLAN
         </h1>
         <p className="text-zinc-500 text-xs sm:text-sm mt-1">
-          Cap of five lifts for today. Finish them, then load more.
+          Cap of five lifts for today ({totalExercises}/5 added). Finish them, then load more.
         </p>
       </div>
 
-      {/* Overview Stats Cards - Mobile Flex/Grid Responsive */}
       <div className="bg-[#111318] border border-zinc-800/80 rounded-2xl p-4 sm:p-6 grid grid-cols-3 gap-3 sm:gap-6 text-center sm:text-left">
         <div>
           <p className="text-zinc-500 text-[10px] sm:text-xs font-semibold uppercase">Exercises</p>
@@ -56,12 +90,12 @@ export default function MyPlanPage() {
           <p className="text-2xl sm:text-4xl font-black text-white mt-1 sm:mt-2">{totalMinutes}</p>
         </div>
         <div>
-          <p className="text-zinc-[#808d9e] text-[#808d9e] text-[10px] sm:text-xs font-semibold uppercase">Calories</p>
+          <p className="text-zinc-500 text-[10px] sm:text-xs font-semibold uppercase">Calories</p>
           <p className="text-2xl sm:text-4xl font-black text-white mt-1 sm:mt-2">{totalCalories}</p>
         </div>
       </div>
 
-      {/* Filter and Tabs */}
+      {/* Filter, Search and Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div className="bg-[#111318] border border-zinc-800/80 p-1 rounded-xl flex w-full sm:w-auto">
           <button
@@ -72,7 +106,7 @@ export default function MyPlanPage() {
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            Today's Plan
+            Today's Plan ({planList.length})
           </button>
           <button
             onClick={() => setActiveTab("saved")}
@@ -82,33 +116,49 @@ export default function MyPlanPage() {
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            Saved
+            Saved ({savedList.length})
           </button>
         </div>
 
-        <div className="flex items-center justify-end gap-2">
-          <span className="text-zinc-500 text-xs font-medium">Sort By</span>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+          {/* Search Bar */}
           <div className="relative">
-            <select
-              value={sortBy}
-              onChange={(e: any) => setSortBy(e.target.value)}
-              className="appearance-none bg-[#111318] border border-zinc-800 text-white text-xs font-semibold px-3 sm:px-4 py-2 pr-8 rounded-xl focus:outline-none cursor-pointer"
-            >
-              <option value="duration">Duration</option>
-              <option value="calories">Calories</option>
-              <option value="rating">Rating</option>
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search plan..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full sm:w-48 bg-[#111318] border border-zinc-800 text-white text-xs rounded-xl pl-8 pr-3 py-2 outline-none focus:border-zinc-600 transition-colors"
+            />
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="flex items-center justify-end gap-2">
+            <span className="text-zinc-500 text-xs font-medium shrink-0">Sort By</span>
+            <div className="relative w-full sm:w-auto">
+              <select
+                value={sortBy}
+                onChange={(e: any) => setSortBy(e.target.value)}
+                className="w-full sm:w-auto appearance-none bg-[#111318] border border-zinc-800 text-white text-xs font-semibold px-3 sm:px-4 py-2 pr-8 rounded-xl focus:outline-none cursor-pointer"
+              >
+                <option value="duration">Duration</option>
+                <option value="calories">Calories</option>
+                <option value="rating">Rating</option>
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Workout List */}
       <div className="space-y-3 sm:space-y-4">
         {sortedList.length === 0 ? (
           <div className="bg-[#111318] border border-zinc-800/80 rounded-2xl p-8 sm:p-12 text-center">
             <p className="text-zinc-500 text-xs sm:text-sm font-medium">
-              {activeTab === "today"
+              {searchQuery
+                ? `No entries found matching "${searchQuery}".`
+                : activeTab === "today"
                 ? "No lifts added for today yet."
                 : "No saved workouts for later."}
             </p>
@@ -122,7 +172,6 @@ export default function MyPlanPage() {
                 key={item.id}
                 className="bg-[#111318] border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-zinc-700 transition-all"
               >
-                {/* Left Card Info */}
                 <div className="flex items-start sm:items-center gap-3.5 sm:gap-4">
                   <div className="relative w-20 h-20 sm:w-28 sm:h-20 rounded-xl overflow-hidden bg-zinc-900 flex-shrink-0">
                     <Image
@@ -158,7 +207,6 @@ export default function MyPlanPage() {
                   </div>
                 </div>
 
-                {/* Right Action Buttons */}
                 <div className="flex items-center justify-end gap-2 sm:gap-3 border-t md:border-t-0 border-zinc-800/60 pt-3 md:pt-0">
                   <Link
                     href={`/workout/${item.id}`}
@@ -169,7 +217,7 @@ export default function MyPlanPage() {
 
                   {activeTab === "today" ? (
                     <button
-                      onClick={() => toggleComplete(item.id)}
+                      onClick={() => toggleComplete(item)}
                       className={`font-black text-[11px] sm:text-xs px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full flex items-center gap-1.5 transition-all cursor-pointer ${
                         isCompleted
                           ? "bg-zinc-800 text-zinc-400"
@@ -181,22 +229,20 @@ export default function MyPlanPage() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => {
-                        addToPlan(item);
-                        removeFromSaved(item.id);
-                      }}
-                      className="bg-[#CCFF00] hover:bg-[#b8e600] text-black font-black text-[11px] sm:text-xs px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full cursor-pointer"
+                      onClick={() => handleMoveToPlan(item)}
+                      disabled={isPlanFull}
+                      className={`font-black text-[11px] sm:text-xs px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full transition-all cursor-pointer ${
+                        isPlanFull
+                          ? "bg-zinc-800 text-zinc-600 cursor-not-allowed opacity-60"
+                          : "bg-[#CCFF00] hover:bg-[#b8e600] text-black"
+                      }`}
                     >
-                      Add to Plan
+                      {isPlanFull ? "Plan Full (5 Max)" : "Add to Plan"}
                     </button>
                   )}
 
                   <button
-                    onClick={() =>
-                      activeTab === "today"
-                        ? removeFromPlan(item.id)
-                        : removeFromSaved(item.id)
-                    }
+                    onClick={() => handleRemove(item)}
                     className="text-zinc-600 hover:text-zinc-300 p-1 sm:p-1.5 transition-colors cursor-pointer"
                   >
                     <X className="w-4 h-4" />
